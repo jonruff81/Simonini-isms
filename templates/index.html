@@ -1,0 +1,783 @@
+{% extends "base.html" %}
+
+{% block title %}Simonini-isms - Raising the Bar in Home Construction{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 text-center">Simonini-isms</h1>
+            <p class="lead text-center">Raising the Bar in Home Construction</p>
+            <div class="text-center mb-4">
+                <p>Simonini is dedicated to constantly raising the bar of custom construction resulting in luxury living with the worry removed.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Search Bar -->
+        <div class="col-12 mb-4">
+            <div class="input-group">
+                <input type="text" id="search-input" class="form-control" placeholder="Search Simonini-isms...">
+                <button class="btn search-btn" type="button" id="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Table of Contents - Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="toc p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="toc-title mb-0">Table of Contents</h4>
+                    <button class="btn btn-sm d-lg-none toc-toggle" id="toc-toggle">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+                <ul class="toc-list mt-3" id="toc-list">
+                    <li><a href="#simonini-isms"><i class="fas fa-star me-2"></i>Simonini-isms</a></li>
+                    <li><a href="#rules-of-business"><i class="fas fa-list-ol me-2"></i>10 Rules of Business</a></li>
+                    <li><a href="#overview"><i class="fas fa-shield-alt me-2"></i>Weathertight with Breathability</a></li>
+                    <li><a href="#solid-construction"><i class="fas fa-hammer me-2"></i>Solid Construction</a></li>
+                    <li><a href="#simonini-isms-details"><i class="fas fa-info-circle me-2"></i>Simonini-isms Details</a></li>
+                    <li><a href="#phase-20-200"><i class="fas fa-tools me-2"></i>Phase 20-200: Sitework</a></li>
+                    <li><a href="#phase-20-300"><i class="fas fa-tools me-2"></i>Phase 20-300: Footings</a></li>
+                    <li><a href="#phase-20-310"><i class="fas fa-tools me-2"></i>Phase 20-310: Foundation</a></li>
+                    <li><a href="#phase-20-330"><i class="fas fa-tools me-2"></i>Phase 20-330: Waterproofing</a></li>
+                    <li><a href="#phase-20-335"><i class="fas fa-tools me-2"></i>Phase 20-335: Sealed Crawl</a></li>
+                    <li><a href="#phase-20-400"><i class="fas fa-tools me-2"></i>Phase 20-400: Interior Slabs</a></li>
+                    <li><a href="#phase-30-100"><i class="fas fa-tools me-2"></i>Phase 30-100: Framing</a></li>
+                    <li><a href="#phase-30-150"><i class="fas fa-tools me-2"></i>Phase 30-150: Roofing</a></li>
+                    <li><a href="#phase-30-230"><i class="fas fa-tools me-2"></i>Phase 30-230: Windows and Doors</a></li>
+                    <li><a href="#phase-30-400"><i class="fas fa-tools me-2"></i>Phase 30-400: HVAC</a></li>
+                    <li><a href="#phase-30-420"><i class="fas fa-tools me-2"></i>Phase 30-420: Plumbing</a></li>
+                    <li><a href="#phase-30-440"><i class="fas fa-tools me-2"></i>Phase 30-440: Electrical</a></li>
+                    <li><a href="#phase-30-600"><i class="fas fa-tools me-2"></i>Phase 30-600: Insulation</a></li>
+                    <li><a href="#phase-30-700"><i class="fas fa-tools me-2"></i>Phase 30-700: Masonry</a></li>
+                    <li><a href="#phase-30-730"><i class="fas fa-tools me-2"></i>Phase 30-730: Stucco</a></li>
+                    <li><a href="#phase-30-800"><i class="fas fa-tools me-2"></i>Phase 30-800: Hardwoods</a></li>
+                    <li><a href="#phase-30-820"><i class="fas fa-tools me-2"></i>Phase 30-820: Drywall</a></li>
+                    <li><a href="#phase-30-900"><i class="fas fa-tools me-2"></i>Phase 30-900: Exterior Trim</a></li>
+                    <li><a href="#phase-30-950"><i class="fas fa-tools me-2"></i>Phase 30-950: Exterior Slabs</a></li>
+                    <li><a href="#phase-40-200"><i class="fas fa-tools me-2"></i>Phase 40-200: Cabinets</a></li>
+                    <li><a href="#phase-40-300"><i class="fas fa-tools me-2"></i>Phase 40-300: Countertops</a></li>
+                    <li><a href="#phase-40-500"><i class="fas fa-tools me-2"></i>Phase 40-500: Ceramic Tile</a></li>
+                    <li><a href="#phase-40-600"><i class="fas fa-tools me-2"></i>Phase 40-600: Interior Trim</a></li>
+                    <li><a href="#phase-50-150"><i class="fas fa-tools me-2"></i>Phase 50-150: Driveways</a></li>
+                    <li><a href="#phase-50-200"><i class="fas fa-tools me-2"></i>Phase 50-200: Pools</a></li>
+                    <li><a href="#phase-50-400"><i class="fas fa-tools me-2"></i>Phase 50-400: Wood Decks</a></li>
+                    <li><a href="#phase-50-500"><i class="fas fa-tools me-2"></i>Phase 50-500: Landscaping</a></li>
+                    <li><a href="#phase-50-600"><i class="fas fa-tools me-2"></i>Phase 50-600: Gutters</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="simonini-content">
+                <!-- Simonini-isms Section -->
+                <section id="simonini-isms" class="section">
+                    <h2 class="section-title">Simonini-isms</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Home Companion Manual</li>
+                            <li>Alan's 10 Rules of business</li>
+                            <li>Weekly updates – builders, estimators, designers, client</li>
+                            <li>24 Hours or less to reply</li>
+                            <li>Internal Pre-construction meeting</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <!-- 10 Rules of Business Section -->
+                <section id="rules-of-business" class="section">
+                    <h2 class="section-title">10 Rules of Business</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li><span class="rule-number">1.</span> Find what you are passionate about and do it.</li>
+                            <li><span class="rule-number">2.</span> Do what you say you are going to do every time.</li>
+                            <li><span class="rule-number">3.</span> Communicate back to everyone in a timely fashion. Even those you do not wish to talk to.</li>
+                            <li><span class="rule-number">4.</span> Be on time or early every time. Being late is disrespectful.</li>
+                            <li><span class="rule-number">5.</span> Set proper expectations. Under commit and over deliver.</li>
+                            <li><span class="rule-number">6.</span> Treat everyone with respect and love.</li>
+                            <li><span class="rule-number">7.</span> Solve the problem and not the person.</li>
+                            <li><span class="rule-number">8.</span> Be prepared for presentations. Winging it rarely works.</li>
+                            <li><span class="rule-number">9.</span> Always have meetings on time and with an agenda.</li>
+                            <li><span class="rule-number">10.</span> Do everything with the customer in mind. You have to have sales to stay in business.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <!-- Weathertight with Breathability Section -->
+                <section id="overview" class="section">
+                    <h2 class="section-title">Weathertight with Breathability</h2>
+                    <div class="detail-card">
+                        <p>Masonry cavity wall flashing and weep hole mortar guard drainage system – Properly installed house wrap – Continuous soffit vents – Heal and seal window and door flashing systems – Drip caps at windows – Sealed pan at front door – Oversized steel plates protect water lines – Piped AC condensation line – 5" gutters and 3"x4" downspouts – Through wall flashing used for brick application at chimneys and valleys where lower and upper roofs meet</p>
+                    </div>
+                </section>
+                
+                <!-- Solid Construction Section -->
+                <section id="solid-construction" class="section">
+                    <h2 class="section-title">Solid Construction Feature</h2>
+                    <div class="detail-card">
+                        <p>Simonini Homes are built with strict structural standards, substantial materials, by respectable tradesmen all following detailed Simonini quality guidelines that includes continuous 12" concrete block wall foundation, cast iron plumbing drops, sound insulation at plumbing lines, OSB sheathing, 1st floor humidifier and more.</p>
+                        
+                        <h5 class="mt-4 mb-3">Benefit</h5>
+                        <p>In addition to proven longevity resulting from solid construction and a wise investment, your Simonini home is solid without the bounce felt in much construction and your home is quiet with reduced sounds from outside to inside and from floor to floor.</p>
+                        
+                        <h5 class="mt-4 mb-3">Features</h5>
+                        <p>Engineered I-Joist 16" on center – OSB sheathing – Brick homes with masonry cavity wall flashing and weep hole drainage system – Cast iron plumbing drops – Pex water lines – Sound insulation for primary bedroom, laundry room and powder room – Architectural shingles – ½" sheetrock screwed to studs – Moisture resistant green board at wet locations – First floor humidifier – Duct work protected from dirt and trash during construction</p>
+                    </div>
+                </section>
+                
+                <!-- Simonini-isms Details -->
+                <section id="simonini-isms-details" class="section">
+                    <h2 class="section-title">Simonini-isms Details</h2>
+                    <div class="detail-card">
+                        <h4 class="mb-3">START:</h4>
+                        <ul>
+                            <li>ASH job sign or community sign</li>
+                            <li>Permit on separate sign</li>
+                            <li>Gates with lock keyed</li>
+                            <li>Temporary builder locks on all houses</li>
+                            <li>In-town jobs and scattered jobs – Notify neighbors with card and visit</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">FOUNDATION:</h4>
+                        <ul>
+                            <li>Steps – "0" degree at front elevation</li>
+                            <li>Maintain straw around foundation</li>
+                            <li>Gravel access</li>
+                            <li>Metal crawl door</li>
+                            <li>Metal shims and Piers</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">FRAMING:</h4>
+                        <ul>
+                            <li>Typar house wrap right side up taped</li>
+                            <li>Temporary steps at front of home with handrails both sides</li>
+                            <li>Temporary rails – OSHA fall protection</li>
+                            <li>Material neat and organized</li>
+                            <li>Spray room name on floor</li>
+                            <li>Plan table with specs and finish schedule</li>
+                            <li>Fill in stair platforms</li>
+                            <li>Double 2 x 4s at each corner for temporary bracing for porches "plumb"</li>
+                            <li>Continuous pipe column from beam to bearing point (piers)</li>
+                            <li>All front doors must be 8 ft in height, NO 6-8 doors in spec homes</li>
+                            <li>Full heigh doors in attic access where possible</li>
+                            <li>Arches – hold up as high as possible</li>
+                            <li>Seat height 18"</li>
+                            <li>Glue and screw subfloors</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">HVAC:</h4>
+                        <ul>
+                            <li>Wood vents in hardwood where possible</li>
+                            <li>Cover vents under construction and paint black</li>
+                            <li>No returns in dining room – multiple smaller returns</li>
+                            <li>Rubber air handler mounts</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">PLUMBING:</h4>
+                        <ul>
+                            <li>Protect pipes for water hammer</li>
+                            <li>Brass or chrome nipples on all water closets</li>
+                            <li>Pipes for tubs inside wall</li>
+                            <li>Create chases</li>
+                            <li>Protect pipes at crown and base with plates</li>
+                            <li>Use sanded caulk on tubs – not grout</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">ELECTRICAL:</h4>
+                        <ul>
+                            <li>Switches at 39 inches</li>
+                            <li>Plug mold and under counter light</li>
+                            <li>Label all electrical panels with labels from label maker</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">ROOFING/CHIMNEYS:</h4>
+                        <ul>
+                            <li>Thru wall flashings</li>
+                        </ul>
+                        
+                        <h4 class="mt-4 mb-3">TRIM:</h4>
+                        <ul>
+                            <li>Flush hearths</li>
+                            <li>Vinyl base behind refrigerator</li>
+                            <li>Cope all crowns</li>
+                            <li>Shim interior doors</li>
+                            <li>Biscuit jointed corners on specific trim packages</li>
+                            <li>Panel molding at attic pull-down stairs</li>
+                            <li>Hook for pull-down stairs</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Construction Phases -->
+                <section id="phase-20-200" class="section">
+                    <h2 class="section-title">Phase 20-200: Sitework</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All temporary drives over sidewalks should have a minimum of 10" of dirt on top of the sidewalk to "bridge" the sidewalk to help reduce cracking of the sidewalk during construction.</li>
+                            <li>Cut down 8" at curb cut for driveway and use ballast stone at temporary drive.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-20-300" class="section">
+                    <h2 class="section-title">Phase 20-300: Footings</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Footings are to be stepped in 8" increments unless otherwise noted.</li>
+                            <li>Tail ditches must be dug on all footings to ensure water is not held in the footing ditch before or after concrete is poured. If rain collects in the footings prior to concrete placement and makes soil unsuitable for proper bearing, re-digging of footing to adequate soil bearing will be at the trade partner's expense.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-20-310" class="section">
+                    <h2 class="section-title">Phase 20-310: Foundation</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All piers must use jamb blocks, so that the piers are smooth blocks on all sides. All cells to be filled solid. Pier sizing is per plan. NOTE: All piers over 4 blocks high must be 16" x 16" minimum.</li>
+                            <li>Crawl access door opening must be a minimum of 36" x 40" to allow for proper access. Verify location(s) with Superintendent.</li>
+                            <li>If foundation has brick, Trade Partner to protect from mud with straw or silt fence.</li>
+                            <li>All mortar joints on the inside of the crawl space must be troweled to smooth.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-20-330" class="section">
+                    <h2 class="section-title">Phase 20-330: Waterproofing – Exterior Drains</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Waterproofing membrane to be placed to top of foundation all the way round regardless of grade.</li>
+                            <li>All waterproofed areas shall have a French drain or strip drain installed at footing-to-wall intersections. All pipes shall be run to daylight and marked with large stake at open end upon completion. Schedule 40 PVC pipe specified and all pipes to be extended a minimum of 15 ft. away from house.</li>
+                            <li>A minimum of two clean-outs shall be installed using rigid schedule 40 PVC pipe. Unless otherwise specified by Simonini superintendent, cleanouts to be located at corners of foundation.</li>
+                            <li>House walls common with the garage require waterproofing and drains when the natural grade is sloping toward this location.</li>
+                            <li>Waterproofing garage walls on slab homes.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-20-335" class="section">
+                    <h2 class="section-title">Phase 20-335: Sealed Crawl Spaces</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Run exterior drain around entire exterior of foundation. Drain must be run to daylight and flagged or staked to prevent damage – minimum of 15 ft. away from house.</li>
+                            <li>Crawl access doors to be insulated steel.</li>
+                            <li>Dehumidification as soon as possible (as required): Recommend use of a refrigeration dehumidifier of a minimum of 15-20 gallons per day during construction. If conditions take on significant bulk water or very high moisture levels of greater than 40% in the wood substrates, then try using electric heat in isolated locations or desiccant dehumidifiers. These units can use significant amps to power, therefore, constant checks of the temp power pole for breaker trips is a must. Additional outlets may be required.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-20-400" class="section">
+                    <h2 class="section-title">Phase 20-400: Interior Slabs (Garage and Basement)</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Lay vapor barrier and insulation per code. Vapor barrier shall be lapped 6" minimum and taped at all seams. Vapor barrier must be placed under all concrete pours.</li>
+                            <li>Expansion joint material and installation shall be in compliance with the drawings and/or building code and installed at all slab edges adjacent to other surfaces.</li>
+                            <li>GARAGE SLAB – Trade to hold concrete flush down so transition at doors is smooth and not raised. To be direct transition – no lip.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-100" class="section">
+                    <h2 class="section-title">Phase 30-100: Framing</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Install roof anchors for safety.</li>
+                            <li>Steel shims to be used when shimming beams sitting on masonry.</li>
+                            <li>Structural frame engineer.</li>
+                            <li>Use glue in all hangers during installation.</li>
+                            <li>All sub-flooring to be glued and screwed at the same time 6" o.c. in the perimeter and 8" in the field. All ends must be capped per manufacturer's specifications. Advantech 1/8" gap on ends and T\&G edges are self-spacing.</li>
+                            <li>OSB to be on outside of headers; no box beams or sandwich beams.</li>
+                            <li>Drill holes and flag to mark point loads.</li>
+                            <li>Use 2 x 6 framing on all laundry and pocket doors when possible.</li>
+                            <li>All exterior corners to be "California" corners. All interiors walls that meet an exterior wall will be blocked with "ladder back" blocking to allow for insulation in the exterior wall, unless specifically directed otherwise by the superintendent.</li>
+                            <li>Trade Partner and Superintendent to identify pinch-points on roof. All crickets to extend minimum of 6"-8" past adjacent wall.</li>
+                            <li>When framing doors that are adjacent to cabinets, check with Superintendent for proper clearances to insure countertop and trim space.</li>
+                            <li>A central cut area must be established and maintained throughout home construction. Cut area is to be used so that scrape material can be reused efficiently and minimize framing lumber waste.</li>
+                            <li>A licensed structural engineer may perform a framing inspection in addition to the county inspection and Simonini Homes' inspection. All items needing correction will be corrected by the trade partner per this Agreement.</li>
+                            <li>When using steels I-beams in any floor system, always run ¾" subfloor over steel. Never butt to it and always use heavy glue between steel top and ¾" plywood.</li>
+                            <li>Framer shall exercise due care not to waste material and to keep all material neatly stacked on jobsite. Cover and protect lumber from elements with Poly during construction.</li>
+                            <li>All vertical walls shall have six-sided construction for energy efficiency. This means areas like bonus rooms and tray ceilings will require the installation of Thermo-Ply or other backing material to allow for all insulation to have an air barrier on both sides of the wall.</li>
+                            <li>Door flashing – install 1 x 4 floor system sloping with cedar shims, then install door pan or bituminous barrier over 1 x 4 and up the sides of door jambs 6". Install door pan and nail only the top of the side flanges (additional door pans to be at Superintendent's discretion). Apply overlapping flex wrap and door pan, taping all miscellaneous seams. Then cut into house wrap at top of door and add drip cap. Caulk and double tape sides and top of door flanges only. NO CAULKING UNDER DOORS.</li>
+                            <li>Window flashing – all windowsills to be sloped then fold house wrap into opening. Staple flex wrap on sill, hanging inside of opening 1-1/4" and folding up the sides of the jambs 6". Overlap house wrap on sides of flex wrap. Cut into house wrap and install drip cap. Caulk and double tape window flanges on the sides and top only. NO CAULKING OR TAPE ON BOTTOM OF WINDOWS.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-150" class="section">
+                    <h2 class="section-title">Phase 30-150: Roofing</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Trade Partner to review all pinch-points with Simonini Superintendent prior to starting work.</li>
+                            <li>Through-wall brick flashing to have ice/water membrane on top to separate aluminum/copper from steel lintels.</li>
+                            <li>Trade Partner to supply and install through-wall flashing for brick and stone veneers per Simonini specs and details. All through wall flashing that has an angle in contact or bolted to it must be covered with bituthene.</li>
+                            <li>The top of all parapet wall caps and 1' down the wall need to be covered in bituthene and copper soldered and welded.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-230" class="section">
+                    <h2 class="section-title">Phase 30-230: Windows and Doors</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All doors should have a door pan installed per manufacturer's installation instructions with all seams 100% welded together to create a watertight pan assembly.</li>
+                            <li>Protecting our thresholds</li>
+                            <li>Sapele door over 5' overhang</li>
+                            <li>Accoya less than 5' overhang</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-400" class="section">
+                    <h2 class="section-title">Phase 30-400: HVAC</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All units installed in a closed crawl space shall be equipped with isolation pads to reduce vibration. All closed crawl spaces must have 1cfm of air for every 30sf of crawl space based on a 32" average foundation height. Supply air with a backflow damper must be pumped into the crawl space to meet this criteria. Supply air must be distributed such that the air flow eliminates any "dead pockets" of air in the crawl space.</li>
+                            <li>Supply and install a 5" media HEPA filter with a minimum of 11 MERV. Install a barometric or backdraft damper to prevent drafting while unit is not running.</li>
+                            <li>Paint floor vent black and caulk perimeter.</li>
+                            <li>Install steam humidifier in climate-controlled area.</li>
+                            <li>Cover all in-floor ducts during construction. Write duct boot size on cover.</li>
+                            <li>Supply air grills at sliding doors and French doors should be 6" off exterior wall so that draperies do not interfere with air supply.</li>
+                            <li>All supply/return straps to be bent upwards and screwed to side of joist or framing member or block ¼" 3/8</li>
+                        </ol>
+                    </div>
+                </section>
+</section>
+                
+                <section id="phase-30-420" class="section">
+                    <h2 class="section-title">Phase 30-420: Plumbing</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>On homes with pools Trader Partner to provide supply line with backflow valve and shut off for pool auto fill. Also provide installation and call-in county inspection for backflow valve for pool auto fill.</li>
+                            <li>Supply tub liners for protection in all tubs after tubs have been roughed in.</li>
+                            <li>All exterior wall penetrations and floor penetrations created by the trade partner shall be sealed and waterproofed against air and moisture penetration by the trade partner using Quick Flash system in a manner acceptable to Alan Simonini Homes, LLC.</li>
+                            <li>Protect all cabinets while performing work in and around them.</li>
+                            <li>Water shut-off valves to under-counter ice makers shall be installed inside adjacent cabinet and have typed labels to identify them.</li>
+                            <li>Laundry rooms above finished space must have a floor drain.</li>
+                            <li>All piping shall be installed on interior walls.
+                                <ul>
+                                    <li>Piping installation in exterior walls must be brought to the superintendent's attention BEFORE commencing work.</li>
+                                    <li>All piping in exterior walls must be marked on the exterior house wrap with fluorescent paint.</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-440" class="section">
+                    <h2 class="section-title">Phase 30-440: Electrical</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All exterior wall penetrations created by the trade partner shall be sealed and waterproofed against air and moisture penetration with Quick Flash in shingle fashion.</li>
+                            <li>Install outlets, switches and hard plastic cover plates (medium size) with screw head slots to be vertical and plates level. Color shall be white unless upgraded color is selected. Verify color with Superintendent prior to trim-out.
+                                <ul>
+                                    <li>Cover plates installed on stained surfaces (walls and/or cabinets) shall be wood or plastic and stained or painted to match color of surface.</li>
+                                    <li>All electrical switches shall be installed to a height of 39" off sub-floor to bottom of box, except around countertops, to keep them in line with the electrical outlets.</li>
+                                    <li>All electrical switches shall be installed 4.5" to 6" from a door opening or end of wall so as to be as inconspicuous as possible (avoid switches in the middle of walls). Check with Superintendent if not sure.</li>
+                                    <li>Any exposed wiring inside or under cabinetry where visible needs to be run in conduit.</li>
+                                </ul>
+                            </li>
+                            <li>Individual breakers within break panels shall be labeled with typed, self-adhering labels indicating what they control.</li>
+                            <li>No tools, equipment, or supplies to be placed on countertops or finished floors without protection. Use drop cloths or moving blankets to protect all surfaces. No shoes on any unprotected floors.</li>
+                            <li>Electrical meter base must be mounted to house immediately after exterior veneer is installed. If temporary heat is to be used, coordinate with Superintendent on installation of meter base prior to exterior veneer installation.</li>
+                            <li>All GFCI breakers for any bathroom device must be located in that bathroom or the electrical panel.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-600" class="section">
+                    <h2 class="section-title">Phase 30-600: Insulation</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Insulate as specified unless noted otherwise in house-specific specifications.</li>
+                            <li>All 6 sides of insulation in unfinished storage areas to be secured from falling.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-700" class="section">
+                    <h2 class="section-title">Phase 30-700: Masonry</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Verify with Superintendent that all through-wall flashing above roof lines, at decks, around windows and doors, etc. has been inspected and accepted by the Superintendent prior to installing any brick.</li>
+                            <li>Install weeps every 24" O/C on veneer walls. Mortar Net or equivalent must be used behind all PVC weep locations. One inch of airspace behind masonry veneers must be kept clear and free or mortar.</li>
+                            <li>Properly tool all mortar for aesthetics as well as to densify joint.</li>
+                            <li>Backside of all masonry work inside crawl spaces must be tooled.</li>
+                            <li>Cover all material and brickwork at the end of the day. Cover all brick work to ensure rainwater does not ruin freshly laid work.</li>
+                            <li>Keep windows, doors, patios, thresholds, etc. protected from mortar.</li>
+                            <li>Remove all mortar/brick debris from ground next to building and place in a location determined by the Superintendent. Place plastic next to foundation with sand on top to prevent brick from being splashed and stained by mud. Add silt fence and straw.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-730" class="section">
+                    <h2 class="section-title">Phase 30-730: Stucco</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All chimneys to be wrapped with bituthene or equivalent.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-800" class="section">
+                    <h2 class="section-title">Phase 30-800: Hardwoods</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Check sub-floor moisture content. Do not install hardwoods unless moisture reading is between 7% and 10%.</li>
+                            <li>Trade Partner to apply vapor resistive sealer to all concrete slabs.</li>
+                            <li>Pre-finished flooring to be glued down. Use vapor resistive glue or a roll-on vapor barrier product.</li>
+                            <li>Install #15 felt. Under floor with 6" laps and turned up.</li>
+                            <li>RAM Board protection</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-820" class="section">
+                    <h2 class="section-title">Phase 30-820: Drywall</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Full bathrooms to be moisture resistant drywall on all walls and ceilings.</li>
+                            <li>Remove all screws that break paper and/or miss studs</li>
+                            <li>All work will be performed to a minimum Level 4 finish as defined by the Drywall Finishing Council (Felipe).</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-900" class="section">
+                    <h2 class="section-title">Phase 30-900: Exterior Trim/Boxing/Siding</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Prime all cut ends of GP or LP Prime Trim boards with Kilz supplied by Alan Simonini Homes, LLC. All wood in in contact with masonry products must be pressure treated or pre-primed.</li>
+                            <li>Block and string lineboxing as part of frame punch.</li>
+                            <li>Install vents (continuous/box/gable). Vents need to have flashing installed in shingle fashion.</li>
+                            <li>Moisture resistant drywall to be used for all porch ceilings.</li>
+                            <li>If using 2x material must be fir and primed on 6-sides. 2x should be wide enough to accept interior and exterior surfaces minimum.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-30-950" class="section">
+                    <h2 class="section-title">Phase 30-950: Exterior Slabs on Compacted Fill or Suspended</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Do not terminate gutters to flow onto porch floor. Get direction from Simonini superintendent for any gutter drains that end at porch floor and accommodate for sleeves.</li>
+                            <li>When concrete slab is on a steel pan, power vents are required.</li>
+                            <li>Wash out concrete pad for Porta John</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-40-200" class="section">
+                    <h2 class="section-title">Phase 40-200: Cabinets</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All base and wall cabinets must be clearly laid out and marked on the floor of every home at the completion of framing and prior to ordering any cabinets. Should any conflicts arise Trade Partner must confer with Simonini superintendent prior to making any changes to cabinet layouts.</li>
+                            <li>Supply color match trim.</li>
+                            <li>Install rubber bumps on all overlay doors and drawers.</li>
+                            <li>90° stops where necessary.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-40-300" class="section">
+                    <h2 class="section-title">Phase 40-300: Countertops</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Verify over counter sink/windows</li>
+                            <li>All countertops must be approved by client.</li>
+                            <li>Clip under sink in lieu of wood blocking.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-40-500" class="section">
+                    <h2 class="section-title">Phase 40-500: Ceramic Tile</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Where a tile surface meets a non-tile surface, caulk all 90° square joints with sanded caulk only. Where tile meets tub, use grout caulk. Use a color that best matches grout color. This includes but is not limited to tile backsplashes to counter tops, tile walls to tubs, and tiled tub platforms to wood floor.</li>
+                            <li>Countertops are to have grout sealer applied.</li>
+                            <li>An "Anti-crack" membrane must be applied on top of all concrete floors prior to setting tile.</li>
+                            <li>No nails at shower pan top or inside curb.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-40-600" class="section">
+                    <h2 class="section-title">Phase 40-600: Interior Trim</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Pocket doors to be painted on the three hidden sides BEFORE installation.</li>
+                            <li>All pocket doors to have "soft" open and close. (No plastic guide, router bottom)</li>
+                            <li>All double doors to have magnet latches at the top.</li>
+                            <li>Trim vendor to sand and wood-fill all joints and nail holes.</li>
+                            <li>All joints in wood trim to be biscuit-joined and glued.</li>
+                            <li>All joints in MDF trim to be glued per manufacturer's recommendations. Use 2-part glue on MDF/wood glue on wood.</li>
+                            <li>All trim must be nailed into studs or joists. Do not nail into OSB, drywall or Durock wall sheathing without finding the stud first. There may be plumbing or HVAC Lines behind the wall sheathing, and Trade Partner will be responsible for any nails subsequently discovered to be penetrating those lines.</li>
+                            <li>Build and install attic access doors. Install pull-down stairs per manufacturer's instructions (screw unit to frame, no nails). Trim to cover bolts on pull-down stairs and cut shims back.</li>
+                            <li>Build and install wood pad for mounting of garage door push buttons and hose bib.</li>
+                            <li>Use screws at garage wood posts, not nails.</li>
+                            <li>All unused material must be stacked neatly on the trim rack, so that it may be returned for credit. Notify Superintendent of any material needed to finish or punch-out the home.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-50-150" class="section">
+                    <h2 class="section-title">Phase 50-150: Driveways and Walks</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Supply and install a 4" PVC pipe as directed by Simonini superintendent under driveway and walk and also to any areas that shall be rendered inaccessible to future underground lines. Pipes to be buried under control joints a minimum of 12" below top of sub-grade. Fill and compact with mechanical tamp. Mark locations of pipes either in the concrete or leave stubbed up at 45° angle above ground.</li>
+                            <li>Install 4" PVC pipe under curb/driveway and driveway/garage expansion joints for electrical wiring.</li>
+                            <li>No utilities in concrete. If utility boxes have been placed in driveway, get direction from Simonini's superintendent before pouring.</li>
+                            <li>Final grade driveways with either crushed stone or pit gravel. Pit gravel should be compacted to 95% compaction. All driveways shall be proof rolled in the presence of the superintendent. All soft spots shall be repaired prior to pouring.</li>
+                            <li>Straight line where drives meet city roads.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-50-200" class="section">
+                    <h2 class="section-title">Phase 50-200: Pools</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>All pools to be equipped with autofill and gravity drain bypass for overflow.</li>
+                            <li>Paint pipes black at all equipment.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-50-400" class="section">
+                    <h2 class="section-title">Phase 50-400: Wood Decks</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Install proper flashing behind all wood attaching to the home.</li>
+                            <li>Use peel & stick tape or similar on top of all framing joist bands.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-50-500" class="section">
+                    <h2 class="section-title">Phase 50-500: Landscaping and Irrigation</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Install minimum 4" PVC sleeves under drives and walks for irrigation lines, electrical, etc. Depth of sleeves shall be 12 inches from top of pipe to bottom of concrete. See Simonini superintendents for locations.</li>
+                            <li>Trade partner to lay ¾" plywood on concrete drives and walks for traffic and machinery.</li>
+                            <li>Add river rock or similar around all daylight drains.</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section id="phase-50-600" class="section">
+                    <h2 class="section-title">Phase 50-600: Gutters</h2>
+                    <div class="detail-card">
+                        <ol>
+                            <li>Low corrugated pipe I want to see more downspout.</li>
+                        </ol>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back to top button -->
+<a href="#" class="back-to-top" id="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+</a>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const contentSections = document.querySelectorAll('.detail-card');
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                // Reset all highlights if search is cleared
+                document.querySelectorAll('.search-highlight').forEach(el => {
+                    const parent = el.parentNode;
+                    parent.innerHTML = parent.innerHTML.replace(/<span class="search-highlight">(.*?)<\/span>/g, '$1');
+                });
+                
+                // Clear any search results message
+                const searchResultsMsg = document.getElementById('search-results-msg');
+                if (searchResultsMsg) searchResultsMsg.remove();
+                
+                return;
+            }
+            
+            // Reset previous highlights
+            document.querySelectorAll('.search-highlight').forEach(el => {
+                const parent = el.parentNode;
+                parent.innerHTML = parent.innerHTML.replace(/<span class="search-highlight">(.*?)<\/span>/g, '$1');
+            });
+            
+            // Remove previous search results message if it exists
+            const oldResultsMsg = document.getElementById('search-results-msg');
+            if (oldResultsMsg) oldResultsMsg.remove();
+            
+            // To store matched sections and total match count
+            const matchedSections = [];
+            let totalMatches = 0;
+            
+            // Search through content and highlight matches
+            contentSections.forEach(section => {
+                const content = section.innerHTML;
+                if (content.toLowerCase().includes(searchTerm)) {
+                    // Add section to matched sections
+                    matchedSections.push({
+                        element: section,
+                        title: section.closest('.section').querySelector('.section-title').textContent,
+                        matches: 0
+                    });
+                    
+                    // Highlight matches without breaking HTML
+                    const regex = new RegExp(searchTerm, 'gi');
+                    let sectionMatches = 0;
+                    
+                    const processNodes = (node) => {
+                        if (node.nodeType === 3) { // Text node
+                            const text = node.nodeValue;
+                            if (text.toLowerCase().includes(searchTerm)) {
+                                // Count matches in this text node
+                                const matches = text.toLowerCase().match(new RegExp(searchTerm, 'g')) || [];
+                                sectionMatches += matches.length;
+                                
+                                const newHtml = text.replace(regex, match =>
+                                    `<span class="search-highlight">${match}</span>`);
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = newHtml;
+                                while (tempDiv.firstChild) {
+                                    node.parentNode.insertBefore(tempDiv.firstChild, node);
+                                }
+                                node.parentNode.removeChild(node);
+                            }
+                        } else if (node.nodeType === 1) { // Element node
+                            Array.from(node.childNodes).forEach(processNodes);
+                        }
+                    };
+                    
+                    Array.from(section.childNodes).forEach(processNodes);
+                    totalMatches += sectionMatches;
+                    
+                    // Update matches count for this section
+                    matchedSections[matchedSections.length - 1].matches = sectionMatches;
+                }
+            });
+            
+            // Sort sections by number of matches (descending)
+            matchedSections.sort((a, b) => b.matches - a.matches);
+            
+            // Create search results message
+            const searchDiv = document.querySelector('.input-group');
+            const resultsMsg = document.createElement('div');
+            resultsMsg.id = 'search-results-msg';
+            resultsMsg.className = 'mt-3 mb-4 p-3 bg-light';
+            resultsMsg.style.borderLeft = '3px solid var(--simonini-gold)';
+            
+            if (matchedSections.length > 0) {
+                resultsMsg.innerHTML = `<b>Found <span style="color: var(--simonini-gold);">${totalMatches}</span> matches in <span style="color: var(--simonini-gold);">${matchedSections.length}</span> sections</b>`;
+                
+                // Scroll to the first section with a match (most matches)
+                matchedSections[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Add navigation buttons to scroll through all matched sections
+                if (matchedSections.length > 1) {
+                    const sectionList = document.createElement('div');
+                    sectionList.className = 'mt-3';
+                    sectionList.innerHTML = '<b>Jump to sections:</b> <div class="mt-2"></div>';
+                    
+                    const linksContainer = sectionList.querySelector('div');
+                    
+                    matchedSections.forEach((section, index) => {
+                        // Create a button-like link for each section
+                        const sectionLink = document.createElement('a');
+                        sectionLink.href = '#';
+                        sectionLink.className = 'jump-to-section';
+                        sectionLink.textContent = `${section.title} (${section.matches})`;
+                        sectionLink.title = `${section.matches} matches found`;
+                        sectionLink.onclick = function(e) {
+                            e.preventDefault();
+                            section.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        };
+                        
+                        linksContainer.appendChild(sectionLink);
+                    });
+                    
+                    resultsMsg.appendChild(sectionList);
+                }
+            } else {
+                resultsMsg.innerHTML = `<b>No matches found for "<span style="color: var(--simonini-gold);">${searchTerm}</span>"</b>`;
+            }
+            
+            searchDiv.parentNode.insertBefore(resultsMsg, searchDiv.nextSibling);
+        }
+        
+        // Make search work on button click and Enter keypress
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Focus the search input when the page loads
+        window.addEventListener('load', function() {
+            // Force a small delay to ensure everything is loaded
+            setTimeout(function() {
+                searchInput.focus();
+            }, 300);
+        });
+        
+        // Table of contents smooth scrolling
+        document.querySelectorAll('.toc-list a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // TOC toggle for mobile
+        const tocToggle = document.getElementById('toc-toggle');
+        const tocList = document.getElementById('toc-list');
+        
+        tocToggle.addEventListener('click', function() {
+            if (tocList.classList.contains('toc-collapsed')) {
+                tocList.classList.remove('toc-collapsed');
+                this.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            } else {
+                tocList.classList.add('toc-collapsed');
+                this.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            }
+        });
+    });
+</script>
+{% endblock %}
