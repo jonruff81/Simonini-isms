@@ -45,7 +45,7 @@
         <nav class="navbar navbar-expand-lg sticky-top">
             <div class="container">
                 <a class="navbar-brand py-3" href="{{ url_for('index') }}">
-                    <img src="../static/simonini-logo.svg" alt="Simonini Logo" style="height: 40px;" class="me-2">
+                    <img src="{{ url_for('static', filename='simonini-logo.svg') }}" alt="Simonini Logo" style="height: 40px;" class="me-2">
                     <span class="d-none d-md-inline ms-2 text-muted" style="font-size: 0.9rem; vertical-align: middle;">ISMS</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
