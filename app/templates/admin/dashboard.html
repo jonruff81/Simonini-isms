@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h2"><i class="fas fa-cog me-2 text-warning"></i>Admin Dashboard</h1>
+        <p class="text-muted">Manage phases and rules</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Phases Management -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-layer-group me-2"></i>Phases</span>
+                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addPhaseModal">
+                    <i class="fas fa-plus me-1"></i>Add Phase
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div id="phasesList" class="list-group list-group-flush">
+                    <div class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-chart-bar me-2"></i>Statistics
+            </div>
+            <div class="card-body">
+                <div id="stats">
+                    <div class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Phase Modal -->
+<div class="modal fade" id="addPhaseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Phase</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Phase Code</label>
+                    <input type="text" class="form-control" id="newPhaseCode" placeholder="e.g., 30-100">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phase Name</label>
+                    <input type="text" class="form-control" id="newPhaseName" placeholder="e.g., Framing">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea class="form-control" id="newPhaseDesc" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePhaseBtn">Save Phase</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Rule Modal -->
+<div class="modal fade" id="addRuleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Rule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Phase</label>
+                    <select class="form-select" id="rulePhaseId"></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Rule Text</label>
+                    <textarea class="form-control" id="newRuleText" rows="4" placeholder="Enter the rule text..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveRuleBtn">Save Rule</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let phases = [];
+
+    async function loadPhases() {
+        try {
+            const response = await fetch('/api/phases');
+            phases = await response.json();
+            renderPhases();
+            updateStats();
+        } catch (e) {
+            console.error('Error loading phases:', e);
+        }
+    }
+
+    function renderPhases() {
+        const container = document.getElementById('phasesList');
+        container.innerHTML = phases.map(p => `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${p.phase_code}</strong>: ${p.phase_name}
+                    <span class="badge bg-secondary ms-2">${p.rule_count} rules</span>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary add-rule-btn" data-phase-id="${p.phase_id}">
+                        <i class="fas fa-plus"></i> Rule
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-phase-btn" data-phase-id="${p.phase_id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Bind events
+        document.querySelectorAll('.add-rule-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('rulePhaseId').value = this.dataset.phaseId;
+                new bootstrap.Modal(document.getElementById('addRuleModal')).show();
+            });
+        });
+
+        document.querySelectorAll('.delete-phase-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                if (!confirm('Delete this phase and all its rules?')) return;
+                const response = await fetch(`/api/phases/${this.dataset.phaseId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadPhases();
+                    showToast('Phase deleted', 'success');
+                }
+            });
+        });
+
+        // Update phase dropdown
+        const select = document.getElementById('rulePhaseId');
+        select.innerHTML = phases.map(p => `<option value="${p.phase_id}">${p.phase_code}: ${p.phase_name}</option>`).join('');
+    }
+
+    function updateStats() {
+        const totalRules = phases.reduce((sum, p) => sum + (p.rule_count || 0), 0);
+        document.getElementById('stats').innerHTML = `
+            <div class="row text-center">
+                <div class="col-6">
+                    <h2 class="text-primary">${phases.length}</h2>
+                    <p class="text-muted mb-0">Phases</p>
+                </div>
+                <div class="col-6">
+                    <h2 class="text-success">${totalRules}</h2>
+                    <p class="text-muted mb-0">Rules</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Save new phase
+    document.getElementById('savePhaseBtn').addEventListener('click', async function() {
+        const code = document.getElementById('newPhaseCode').value.trim();
+        const name = document.getElementById('newPhaseName').value.trim();
+        const desc = document.getElementById('newPhaseDesc').value.trim();
+
+        if (!code || !name) {
+            showToast('Code and name are required', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/phases', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phase_code: code, phase_name: name, description: desc })
+            });
+
+            if (response.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('addPhaseModal')).hide();
+                loadPhases();
+                showToast('Phase created', 'success');
+                document.getElementById('newPhaseCode').value = '';
+                document.getElementById('newPhaseName').value = '';
+                document.getElementById('newPhaseDesc').value = '';
+            } else {
+                const error = await response.json();
+                showToast(error.error || 'Error creating phase', 'danger');
+            }
+        } catch (e) {
+            showToast('Error creating phase', 'danger');
+        }
+    });
+
+    // Save new rule
+    document.getElementById('saveRuleBtn').addEventListener('click', async function() {
+        const phaseId = document.getElementById('rulePhaseId').value;
+        const text = document.getElementById('newRuleText').value.trim();
+
+        if (!text) {
+            showToast('Rule text is required', 'warning');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/rules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phase_id: parseInt(phaseId), rule_text: text })
+            });
+
+            if (response.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('addRuleModal')).hide();
+                loadPhases();
+                showToast('Rule created', 'success');
+                document.getElementById('newRuleText').value = '';
+            } else {
+                const error = await response.json();
+                showToast(error.error || 'Error creating rule', 'danger');
+            }
+        } catch (e) {
+            showToast('Error creating rule', 'danger');
+        }
+    });
+
+    // Load phases on page load
+    loadPhases();
+</script>
+{% endblock %}

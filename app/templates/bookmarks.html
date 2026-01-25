@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookmarks - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h2"><i class="fas fa-bookmark me-2 text-warning"></i>My Bookmarks</h1>
+        <p class="text-muted">Your saved rules for quick reference</p>
+    </div>
+</div>
+
+{% if bookmarks %}
+<div class="row">
+    <div class="col-12">
+        <div class="list-group">
+            {% for bookmark in bookmarks %}
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">
+                            <a href="{{ url_for('main.view_phase', phase_code=bookmark.phase_code) }}"
+                               class="text-decoration-none">
+                                <span class="badge bg-primary me-2">{{ bookmark.phase_code }}</span>
+                                {{ bookmark.phase_name }}
+                            </a>
+                            <span class="text-muted">- Rule {{ bookmark.rule_number }}</span>
+                        </h6>
+                        <p class="mb-1">{{ bookmark.rule_text[:200] }}{% if bookmark.rule_text | length > 200 %}...{% endif %}</p>
+                        {% if bookmark.notes %}
+                        <small class="text-muted">
+                            <i class="fas fa-sticky-note me-1"></i>{{ bookmark.notes }}
+                        </small>
+                        {% endif %}
+                    </div>
+                    <div class="ms-3">
+                        <a href="{{ url_for('main.view_rule', rule_id=bookmark.rule_id) }}"
+                           class="btn btn-sm btn-outline-primary me-1">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <button class="btn btn-sm btn-outline-danger remove-bookmark"
+                                data-rule-id="{{ bookmark.rule_id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <small class="text-muted">Bookmarked: {{ bookmark.created_at.strftime('%b %d, %Y') }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            You haven't bookmarked any rules yet. Browse the <a href="{{ url_for('main.index') }}">rules</a>
+            and click the bookmark icon to save them here.
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll('.remove-bookmark').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const ruleId = this.dataset.ruleId;
+            if (!confirm('Remove this bookmark?')) return;
+
+            try {
+                const response = await fetch(`/api/bookmarks/${ruleId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    this.closest('.list-group-item').remove();
+                    showToast('Bookmark removed', 'success');
+                }
+            } catch (e) {
+                showToast('Error removing bookmark', 'danger');
+            }
+        });
+    });
+</script>
+{% endblock %}

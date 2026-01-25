@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.full_title }} - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.spec_reference') }}">Spec Reference</a></li>
+            <li class="breadcrumb-item active">{{ document.phase_code }}</li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-primary fs-6 me-2">{{ document.phase_code }}</span>
+            <h1 class="display-6 fw-bold simonini-navy mb-0">{{ document.phase_name }}</h1>
+        </div>
+        <p class="text-muted mb-0">{{ document.summary }}</p>
+    </div>
+    <div class="col-auto">
+        {% if document.jobtread_url %}
+        <a href="{{ document.jobtread_url }}" target="_blank" class="btn btn-danger">
+            <i class="fas fa-file-pdf me-1"></i>View PDF
+        </a>
+        {% endif %}
+        <button class="btn btn-outline-primary" onclick="shareSpec()">
+            <i class="fas fa-share-alt me-1"></i>Share
+        </button>
+    </div>
+</div>
+
+<!-- Table of Contents -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h6 class="mb-0"><i class="fas fa-list me-2"></i>Contents</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for section in document.sections %}
+            <div class="col-md-6 col-lg-4 mb-2">
+                <a href="#section-{{ section.section_id }}" class="text-decoration-none">
+                    <i class="fas fa-chevron-right me-1 text-muted"></i>
+                    {{ section.section_name }}
+                    <span class="badge bg-secondary">{{ section['items']|length }}</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Sections and Items -->
+{% for section in document.sections %}
+<section id="section-{{ section.section_id }}" class="mb-5">
+    <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+        <h3 class="simonini-gold mb-0">{{ section.section_name }}</h3>
+        <span class="badge bg-secondary ms-2">{{ section['items']|length }} items</span>
+    </div>
+
+    <div class="list-group">
+        {% for item in section['items'] %}
+        <div class="list-group-item spec-item" id="item-{{ item.item_id }}">
+            <div class="d-flex">
+                <div class="me-3">
+                    <span class="badge bg-dark rounded-pill">{{ item.item_number }}</span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="item-text">{{ item.item_text }}</div>
+                </div>
+                <div class="ms-2">
+                    <button class="btn btn-sm btn-outline-warning bookmark-btn {% if item.item_id in bookmarked_ids %}active{% endif %}"
+                            data-item-id="{{ item.item_id }}"
+                            title="Bookmark">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+
+<!-- Navigation -->
+<div class="d-flex justify-content-between mb-4">
+    <a href="{{ url_for('main.spec_reference') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Index
+    </a>
+    <a href="#" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-up me-1"></i>Back to Top
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Bookmark functionality
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const itemId = this.dataset.itemId;
+            const isBookmarked = this.classList.contains('active');
+
+            try {
+                if (isBookmarked) {
+                    // Remove bookmark
+                    const response = await fetch(`/api/spec-reference/bookmarks/${itemId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        this.classList.remove('active');
+                        showToast('Bookmark removed');
+                    }
+                } else {
+                    // Add bookmark
+                    const response = await fetch('/api/spec-reference/bookmarks', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({item_id: parseInt(itemId)})
+                    });
+                    if (response.ok) {
+                        this.classList.add('active');
+                        showToast('Bookmark added');
+                    }
+                }
+            } catch (error) {
+                console.error('Bookmark error:', error);
+                showToast('Error updating bookmark', 'danger');
+            }
+        });
+    });
+});
+
+function shareSpec() {
+    const url = window.location.href;
+    const title = document.title;
+
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            url: url
+        });
+    } else {
+        // Copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('Link copied to clipboard');
+        });
+    }
+}
+
+function showToast(message, type = 'success') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+</script>
+
+<style>
+.spec-item {
+    transition: background-color 0.2s;
+}
+.spec-item:hover {
+    background-color: #f8f9fa;
+}
+.spec-item:target {
+    background-color: #fff3cd;
+    animation: highlight-fade 2s ease-out;
+}
+@keyframes highlight-fade {
+    from { background-color: #ffc107; }
+    to { background-color: #fff3cd; }
+}
+.item-text {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+.bookmark-btn.active {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+.simonini-navy {
+    color: #182641;
+}
+.simonini-gold {
+    color: #ad9244;
+}
+section {
+    scroll-margin-top: 80px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Simonini-isms - Raising the Bar in Home Construction{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 text-center">Simonini-isms</h1>
+        <p class="lead text-center text-muted">Raising the Bar in Home Construction</p>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="row mb-4">
+    <div class="col-12 col-md-8 mx-auto">
+        <div class="input-group">
+            <input type="text" id="search-input" class="form-control form-control-lg"
+                   placeholder="Search rules..." autofocus>
+            <button class="btn btn-primary" type="button" id="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div id="search-results" class="mt-3 d-none"></div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Table of Contents - Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="toc p-3 bg-light rounded sticky-top" style="top: 80px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="toc-title mb-0">
+                    <i class="fas fa-list me-2"></i>Contents
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary d-lg-none" id="toc-toggle">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <ul class="toc-list list-unstyled" id="toc-list">
+                {% for phase in phases %}
+                <li class="mb-2">
+                    <a href="#phase-{{ phase.phase_code }}" class="text-decoration-none">
+                        <i class="fas fa-tools me-2 text-muted"></i>
+                        {{ phase.phase_code }}: {{ phase.phase_name }}
+                        <span class="badge bg-secondary ms-1">{{ phase.rule_count }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9">
+        {% for phase in phases %}
+        <section id="phase-{{ phase.phase_code }}" class="phase-section mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="section-title h4">
+                    <span class="badge bg-primary me-2">{{ phase.phase_code }}</span>
+                    {{ phase.phase_name }}
+                </h2>
+                <button class="btn btn-sm btn-outline-secondary share-btn"
+                        data-type="phase" data-id="{{ phase.phase_id }}"
+                        title="Share this phase">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            </div>
+
+            {% if phase.description %}
+            <p class="text-muted mb-3">{{ phase.description }}</p>
+            {% endif %}
+
+            <div class="rules-list">
+                <ol class="list-group list-group-numbered">
+                    {% for rule in phase.rules %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start rule-item"
+                        data-rule-id="{{ rule.rule_id }}">
+                        <div class="ms-2 me-auto rule-content" data-rule-id="{{ rule.rule_id }}">
+                            {{ rule.rule_text }}
+                        </div>
+                        <div class="rule-actions ms-2 d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-warning bookmark-btn {% if rule.rule_id in bookmarked_ids %}active{% endif %}"
+                                    data-rule-id="{{ rule.rule_id }}"
+                                    title="{% if rule.rule_id in bookmarked_ids %}Remove bookmark{% else %}Bookmark{% endif %}">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-info note-btn"
+                                    data-rule-id="{{ rule.rule_id }}"
+                                    title="Add note">
+                                <i class="fas fa-sticky-note"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary share-btn"
+                                    data-type="rule" data-id="{{ rule.rule_id }}"
+                                    title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-sticky-note me-2"></i>Personal Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="noteText" rows="4" placeholder="Add your personal note..."></textarea>
+                <input type="hidden" id="noteRuleId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" id="deleteNoteBtn">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize with bookmarked IDs from server
+    const bookmarkedIds = new Set({{ bookmarked_ids | list | tojson }});
+</script>
+<script src="{{ url_for('static', filename='js/highlights.js') }}"></script>
+{% endblock %}

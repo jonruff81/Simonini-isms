@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Rule {{ rule.rule_number }} - Phase {{ rule.phase_code }} - Simonini-isms{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="breadcrumb-item">
+            <a href="{{ url_for('main.view_phase', phase_code=rule.phase_code) }}">
+                Phase {{ rule.phase_code }}
+            </a>
+        </li>
+        <li class="breadcrumb-item active">Rule {{ rule.rule_number }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>Rule {{ rule.rule_number }}</strong>
+                    <span class="ms-2 badge bg-light text-dark">{{ rule.phase_code }}: {{ rule.phase_name }}</span>
+                </span>
+                <div>
+                    <button class="btn btn-sm btn-light bookmark-btn {% if rule.is_bookmarked %}active{% endif %}"
+                            data-rule-id="{{ rule.rule_id }}">
+                        <i class="fas fa-bookmark"></i>
+                        {% if rule.is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
+                    </button>
+                    <button class="btn btn-sm btn-light share-btn ms-1"
+                            data-type="rule" data-id="{{ rule.rule_id }}">
+                        <i class="fas fa-share-alt me-1"></i>Share
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="rule-text fs-5 rule-content" data-rule-id="{{ rule.rule_id }}"
+                     id="rule-text-{{ rule.rule_id }}">
+                    {{ rule.rule_text }}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between text-muted small">
+                    <span>Created: {{ rule.created_at.strftime('%b %d, %Y') if rule.created_at else 'N/A' }}</span>
+                    <span>Updated: {{ rule.updated_at.strftime('%b %d, %Y') if rule.updated_at else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Highlight Instructions -->
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-highlighter me-2"></i>
+            <strong>Tip:</strong> Select text above to highlight it. Your highlights are saved automatically.
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- User Note -->
+        <div class="card mb-3">
+            <div class="card-header bg-light">
+                <i class="fas fa-sticky-note me-2"></i>Your Note
+            </div>
+            <div class="card-body">
+                <textarea class="form-control" id="userNote" rows="4"
+                          placeholder="Add your personal note about this rule...">{{ rule.user_note.note_text if rule.user_note else '' }}</textarea>
+                <button class="btn btn-primary btn-sm mt-2" id="saveNoteBtn">
+                    <i class="fas fa-save me-1"></i>Save Note
+                </button>
+            </div>
+        </div>
+
+        <!-- Highlights -->
+        <div class="card mb-3">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-highlighter me-2"></i>Your Highlights</span>
+                <span class="badge bg-secondary" id="highlightCount">{{ rule.highlights | length }}</span>
+            </div>
+            <div class="card-body">
+                {% if rule.highlights %}
+                <ul class="list-unstyled mb-0" id="highlightsList">
+                    {% for h in rule.highlights %}
+                    <li class="mb-2 p-2 rounded highlight-item" style="background-color: {{ h.highlight_color }}30;"
+                        data-highlight-id="{{ h.highlight_id }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="small">"{{ h.highlighted_text[:50] }}{% if h.highlighted_text | length > 50 %}...{% endif %}"</span>
+                            <button class="btn btn-sm btn-link text-danger p-0 delete-highlight"
+                                    data-highlight-id="{{ h.highlight_id }}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted small mb-0" id="noHighlights">No highlights yet. Select text above to highlight.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Version History -->
+        {% if user.can_admin %}
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-history me-2"></i>Version History
+            </div>
+            <div class="card-body">
+                <button class="btn btn-outline-secondary btn-sm w-100" id="loadVersions">
+                    Load Version History
+                </button>
+                <div id="versionsList" class="mt-2"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const currentRuleId = {{ rule.rule_id }};
+    const existingHighlights = {{ rule.highlights | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/highlights.js') }}"></script>
+<script>
+    // Save note
+    document.getElementById('saveNoteBtn').addEventListener('click', async function() {
+        const noteText = document.getElementById('userNote').value;
+        try {
+            const response = await fetch('/api/notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rule_id: currentRuleId, note_text: noteText })
+            });
+            if (response.ok) {
+                showToast('Note saved!', 'success');
+            }
+        } catch (e) {
+            showToast('Error saving note', 'danger');
+        }
+    });
+
+    // Delete highlight
+    document.querySelectorAll('.delete-highlight').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const highlightId = this.dataset.highlightId;
+            try {
+                const response = await fetch(`/api/highlights/${highlightId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    this.closest('.highlight-item').remove();
+                    // Update count
+                    const count = document.querySelectorAll('.highlight-item').length;
+                    document.getElementById('highlightCount').textContent = count;
+                    if (count === 0) {
+                        document.getElementById('highlightsList').innerHTML =
+                            '<p class="text-muted small mb-0">No highlights yet.</p>';
+                    }
+                    showToast('Highlight removed', 'success');
+                }
+            } catch (e) {
+                showToast('Error removing highlight', 'danger');
+            }
+        });
+    });
+
+    // Load version history
+    {% if user.can_admin %}
+    document.getElementById('loadVersions').addEventListener('click', async function() {
+        try {
+            const response = await fetch(`/api/rules/${currentRuleId}/versions`);
+            const versions = await response.json();
+            const container = document.getElementById('versionsList');
+
+            if (versions.length === 0) {
+                container.innerHTML = '<p class="text-muted small">No version history.</p>';
+                return;
+            }
+
+            container.innerHTML = versions.map(v => `
+                <div class="border-bottom py-2">
+                    <div class="d-flex justify-content-between">
+                        <strong>Version ${v.version_number}</strong>
+                        <small class="text-muted">${new Date(v.changed_at).toLocaleDateString()}</small>
+                    </div>
+                    <small class="text-muted">${v.change_summary || 'No summary'}</small>
+                    <br>
+                    <small>By: ${v.changed_by_username || 'Unknown'}</small>
+                </div>
+            `).join('');
+
+            this.classList.add('d-none');
+        } catch (e) {
+            showToast('Error loading versions', 'danger');
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

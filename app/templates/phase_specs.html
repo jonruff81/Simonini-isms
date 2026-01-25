@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Phase Spec PDFs - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Phase Spec PDFs</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-6 fw-bold simonini-navy">
+            <i class="fas fa-file-pdf text-danger me-2"></i>Phase Spec PDFs
+        </h1>
+        <p class="text-muted">2025 Phase Specification PDFs from JobTread</p>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body py-3">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAll">
+                    <label class="form-check-label" for="selectAll">Select All</label>
+                </div>
+            </div>
+            <div class="col-auto">
+                <span class="text-muted" id="selectionCount">0 selected</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <button class="btn btn-primary" id="printSelectedBtn" disabled>
+                    <i class="fas fa-print me-1"></i>Print Selected
+                </button>
+                <button class="btn btn-outline-primary ms-2" id="printAllBtn">
+                    <i class="fas fa-print me-1"></i>Print All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading State -->
+<div id="loadingState" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Loading Phase Specs from JobTread...</p>
+</div>
+
+<!-- Error State -->
+<div id="errorState" class="alert alert-danger d-none" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <span id="errorMessage">Failed to load files</span>
+</div>
+
+<!-- Files Grid -->
+<div id="filesContainer" class="d-none">
+    <div class="row" id="filesGrid">
+        <!-- Files will be populated here -->
+    </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-print me-2"></i>Print PDFs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Opening <span id="printCount">0</span> PDF(s) in new tabs...</p>
+                <p class="small text-muted">Use your browser's print function (Ctrl+P or Cmd+P) to print each document.</p>
+                <div id="printLinks" class="mt-3">
+                    <!-- Links will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+    const filesContainer = document.getElementById('filesContainer');
+    const filesGrid = document.getElementById('filesGrid');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const selectionCount = document.getElementById('selectionCount');
+    const printSelectedBtn = document.getElementById('printSelectedBtn');
+    const printAllBtn = document.getElementById('printAllBtn');
+    const printModal = new bootstrap.Modal(document.getElementById('printModal'));
+    const printCount = document.getElementById('printCount');
+    const printLinks = document.getElementById('printLinks');
+
+    let files = [];
+    let selectedFiles = new Set();
+
+    // Load files from API
+    async function loadFiles() {
+        try {
+            const response = await fetch('/api/phase-specs');
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load files');
+            }
+
+            files = data.files;
+            renderFiles();
+
+            loadingState.classList.add('d-none');
+            filesContainer.classList.remove('d-none');
+
+        } catch (error) {
+            console.error('Error loading files:', error);
+            loadingState.classList.add('d-none');
+            errorState.classList.remove('d-none');
+            errorMessage.textContent = error.message;
+        }
+    }
+
+    // Render file cards
+    function renderFiles() {
+        filesGrid.innerHTML = '';
+
+        // Group files by phase category (first digit)
+        const categories = {};
+        files.forEach(file => {
+            if (file.phase_code) {
+                const category = file.phase_code.split('-')[0];
+                if (!categories[category]) {
+                    categories[category] = [];
+                }
+                categories[category].push(file);
+            } else {
+                if (!categories['other']) {
+                    categories['other'] = [];
+                }
+                categories['other'].push(file);
+            }
+        });
+
+        // Category labels
+        const categoryLabels = {
+            '00': 'General (00-xxx)',
+            '10': 'Pre-Construction (10-xxx)',
+            '20': 'Site & Foundation (20-xxx)',
+            '30': 'Structure & Systems (30-xxx)',
+            '40': 'Finishes (40-xxx)',
+            '50': 'Site & Exterior (50-xxx)',
+            'other': 'Other'
+        };
+
+        // Render each category
+        Object.keys(categories).sort().forEach(category => {
+            const categoryFiles = categories[category];
+
+            // Category header
+            const headerHtml = `
+                <div class="col-12 mt-4 mb-2">
+                    <h5 class="fw-bold simonini-gold border-bottom pb-2">
+                        ${categoryLabels[category] || 'Phase ' + category}
+                    </h5>
+                </div>
+            `;
+            filesGrid.insertAdjacentHTML('beforeend', headerHtml);
+
+            // File cards
+            categoryFiles.forEach(file => {
+                const cardHtml = `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100 file-card" data-file-id="${file.id}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input file-checkbox" type="checkbox"
+                                               data-file-id="${file.id}"
+                                               data-file-url="${file.url}"
+                                               data-file-name="${file.name}">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-file-pdf fa-2x text-danger me-2"></i>
+                                            <div>
+                                                <span class="badge bg-primary">${file.phase_code || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                        <h6 class="card-title mb-1">${file.description}</h6>
+                                        <p class="card-text small text-muted mb-2">
+                                            ${file.size_kb} KB
+                                        </p>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="${file.url}" target="_blank" class="btn btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            <a href="${file.url}" download="${file.name}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-download me-1"></i>Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                filesGrid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        });
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelection);
+        });
+    }
+
+    // Update selection state
+    function updateSelection() {
+        selectedFiles.clear();
+        document.querySelectorAll('.file-checkbox:checked').forEach(checkbox => {
+            selectedFiles.add({
+                id: checkbox.dataset.fileId,
+                url: checkbox.dataset.fileUrl,
+                name: checkbox.dataset.fileName
+            });
+        });
+
+        selectionCount.textContent = selectedFiles.size + ' selected';
+        printSelectedBtn.disabled = selectedFiles.size === 0;
+
+        // Update select all checkbox
+        const allCheckboxes = document.querySelectorAll('.file-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
+        selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+        selectAllCheckbox.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
+    }
+
+    // Select all toggle
+    selectAllCheckbox.addEventListener('change', function() {
+        const isChecked = this.checked;
+        document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+        updateSelection();
+    });
+
+    // Print selected files
+    printSelectedBtn.addEventListener('click', function() {
+        if (selectedFiles.size === 0) return;
+
+        printCount.textContent = selectedFiles.size;
+        printLinks.innerHTML = '';
+
+        selectedFiles.forEach(file => {
+            const linkHtml = `
+                <a href="${file.url}" target="_blank" class="d-block mb-1">
+                    <i class="fas fa-external-link-alt me-1"></i>${file.name}
+                </a>
+            `;
+            printLinks.insertAdjacentHTML('beforeend', linkHtml);
+            window.open(file.url, '_blank');
+        });
+
+        printModal.show();
+    });
+
+    // Print all files
+    printAllBtn.addEventListener('click', function() {
+        if (files.length === 0) return;
+
+        printCount.textContent = files.length;
+        printLinks.innerHTML = '';
+
+        files.forEach(file => {
+            const linkHtml = `
+                <a href="${file.url}" target="_blank" class="d-block mb-1">
+                    <i class="fas fa-external-link-alt me-1"></i>${file.name}
+                </a>
+            `;
+            printLinks.insertAdjacentHTML('beforeend', linkHtml);
+            window.open(file.url, '_blank');
+        });
+
+        printModal.show();
+    });
+
+    // Initialize
+    loadFiles();
+});
+</script>
+
+<style>
+.file-card {
+    transition: box-shadow 0.2s;
+}
+.file-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.simonini-navy {
+    color: #182641;
+}
+.simonini-gold {
+    color: #ad9244;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h2"><i class="fas fa-search me-2"></i>Search Rules</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12 col-md-8 mx-auto">
+        <div class="input-group input-group-lg">
+            <input type="text" id="searchInput" class="form-control"
+                   placeholder="Search for keywords..." autofocus>
+            <button class="btn btn-primary" type="button" id="searchBtn">
+                <i class="fas fa-search me-1"></i>Search
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div id="searchStatus" class="text-center text-muted mb-3"></div>
+        <div id="searchResults"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchResults = document.getElementById('searchResults');
+    const searchStatus = document.getElementById('searchStatus');
+
+    async function performSearch() {
+        const query = searchInput.value.trim();
+        if (!query) {
+            searchResults.innerHTML = '';
+            searchStatus.textContent = '';
+            return;
+        }
+
+        searchStatus.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Searching...';
+
+        try {
+            const response = await fetch(`/api/rules?q=${encodeURIComponent(query)}`);
+            const results = await response.json();
+
+            if (results.length === 0) {
+                searchStatus.textContent = 'No results found';
+                searchResults.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No rules match "${query}". Try different keywords.
+                    </div>
+                `;
+                return;
+            }
+
+            searchStatus.textContent = `Found ${results.length} result${results.length === 1 ? '' : 's'}`;
+
+            searchResults.innerHTML = results.map(rule => `
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="/phase/${rule.phase_code}" class="text-decoration-none">
+                                    <span class="badge bg-primary me-2">${rule.phase_code}</span>
+                                    ${rule.phase_name}
+                                </a>
+                                <span class="text-muted ms-2">Rule ${rule.rule_number}</span>
+                            </div>
+                            <a href="/rule/${rule.rule_id}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                        <p class="mb-0 mt-2">${highlightText(rule.rule_text, query)}</p>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            searchStatus.textContent = 'Error searching';
+            console.error('Search error:', e);
+        }
+    }
+
+    function highlightText(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') performSearch();
+    });
+
+    // Debounced search on typing
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,366 @@
+/* Simonini Brand-Inspired Styling for Simonini-isms */
+
+/* Base Styles & Typography */
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+.display-4, .display-5, .display-6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+.lead {
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+
+/* Simonini Color Palette */
+:root {
+    --simonini-blue: #18293d;
+    --simonini-gold: #b89f63;
+    --simonini-light-gold: #ddc88e;
+    --simonini-dark: #1e1e1e;
+    --simonini-light: #f4f4f4;
+    --simonini-gray: #56595a;
+    --simonini-light-gray: #e9e9e9;
+}
+
+/* Simonini-isms Specific Styling */
+.simonini-content {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.toc {
+    background-color: white;
+    border-radius: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 100px;
+}
+
+.toc-title {
+    color: var(--simonini-blue);
+    border-bottom: 2px solid var(--simonini-gold);
+    padding-bottom: 0.5rem;
+}
+
+.toc-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.toc-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.toc-list li:last-child {
+    border-bottom: none;
+}
+
+.toc-list li a {
+    color: var(--simonini-gray);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+    display: block;
+}
+
+.toc-list li a:hover {
+    color: var(--simonini-gold);
+}
+
+.section {
+    padding: 2rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.section-title {
+    color: var(--simonini-blue);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.search-highlight {
+    background-color: rgba(184, 159, 99, 0.4);
+    padding: 2px 2px;
+    font-weight: bold;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(184, 159, 99, 0.5);
+}
+
+#search-results-msg {
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.jump-to-section {
+    display: inline-block;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 2px 8px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.jump-to-section:hover {
+    background-color: var(--simonini-gold);
+    color: white;
+    border-color: var(--simonini-gold);
+}
+
+.category-header {
+    background-color: var(--simonini-blue);
+    color: white;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+}
+
+.rule-number {
+    color: var(--simonini-gold);
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+.detail-card {
+    background-color: white;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.phase-title {
+    background-color: var(--simonini-light-gold);
+    color: var(--simonini-blue);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Logo Styling */
+.simonini-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--simonini-blue);
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.footer-logo {
+    color: white;
+    font-size: 2rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+/* Top bar and Navbar Styling - Match Simonini navigation */
+.top-bar {
+    background-color: var(--simonini-blue) !important;
+    font-size: 0.8rem;
+}
+
+.top-bar .social-links a {
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.top-bar .social-links a:hover {
+    opacity: 1;
+}
+
+/* Navbar Styling - Match Simonini navigation */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px 0;
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: var(--simonini-blue);
+}
+
+.navbar .nav-link {
+    font-family: 'Source Sans Pro', sans-serif;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    padding: 0.75rem 1.25rem;
+    color: var(--simonini-gray);
+    position: relative;
+}
+
+.navbar .nav-link:hover {
+    color: var(--simonini-gold);
+}
+
+.navbar .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 5px;
+    left: 50%;
+    background-color: var(--simonini-gold);
+    transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover::after {
+    width: 50%;
+    left: 25%;
+}
+
+.search-input {
+    border: 1px solid #ddd;
+    border-radius: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.search-btn {
+    background-color: var(--simonini-gold);
+    color: white;
+    border: none;
+    border-radius: 0;
+}
+
+.search-btn:hover {
+    background-color: var(--simonini-blue);
+    color: white;
+}
+
+/* Main Content Area */
+.main-content {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+/* Footer - Match Simonini footer */
+.footer {
+    background-color: var(--simonini-blue);
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
+}
+
+.footer h5 {
+    color: var(--simonini-gold);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+}
+
+.footer a, .footer-link {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer a:hover, .footer-link:hover {
+    color: var(--simonini-gold);
+    text-decoration: none;
+}
+
+.footer hr {
+    border-color: rgba(255,255,255,0.1);
+}
+
+.social-icons a {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.2rem;
+}
+
+.social-icons a:hover {
+    color: var(--simonini-gold);
+}
+
+/* Back to top button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--simonini-gold);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+}
+
+.back-to-top:hover {
+    background-color: var(--simonini-blue);
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .toc {
+        position: relative;
+        top: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .toc-list.toc-collapsed {
+        display: none;
+    }
+    
+    .toc-toggle {
+        background-color: var(--simonini-gold);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 5px 10px;
+    }
+    
+    .toc-toggle:hover {
+        background-color: var(--simonini-blue);
+    }
+}
+
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.25rem;
+    }
+    
+    .section {
+        padding: 1.5rem 0;
+    }
+    
+    .detail-card {
+        padding: 1rem;
+    }
+    
+    .navbar .nav-link {
+        padding: 0.5rem 1rem;
+    }
+    
+    .navbar .nav-link::after {
+        display: none;
+    }
+}

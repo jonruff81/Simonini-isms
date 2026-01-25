@@ -1,0 +1,816 @@
+{% extends "base.html" %}
+
+{% block title %}Phase Specs Guide - Simonini-isms{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 text-center">Phase Specs Guide</h1>
+        <p class="lead text-center text-muted">Construction Standards & Requirements by Trade</p>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="row mb-4">
+    <div class="col-12 col-md-8 mx-auto">
+        <div class="input-group">
+            <input type="text" id="search-input" class="form-control form-control-lg"
+                   placeholder="Search specs by keyword, trade, or cost code..." autofocus>
+            <button class="btn btn-primary" type="button" id="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div id="search-results" class="mt-3 d-none"></div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Table of Contents - Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="toc p-3 bg-light rounded sticky-top" style="top: 80px; max-height: calc(100vh - 100px); overflow-y: auto;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="toc-title mb-0">
+                    <i class="fas fa-list me-2"></i>Contents
+                </h5>
+                <a href="{{ url_for('main.phase_specs') }}" class="btn btn-sm btn-outline-danger" title="View PDFs">
+                    <i class="fas fa-file-pdf"></i>
+                </a>
+            </div>
+            <ul class="toc-list list-unstyled mb-0" id="toc-list">
+                {% for doc in documents %}
+                <li class="mb-2">
+                    <a href="#spec-{{ doc.phase_code }}" class="text-decoration-none toc-link">
+                        <span class="badge bg-primary me-1">{{ doc.phase_code }}</span>
+                        <span class="toc-name">{{ doc.phase_name }}</span>
+                        <span class="badge bg-secondary ms-1">{{ doc.item_count }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9">
+        {% for doc in documents %}
+        <section id="spec-{{ doc.phase_code }}" class="spec-section mb-5">
+            <!-- Phase Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h2 class="section-title h4 mb-0">
+                    <span class="badge bg-primary me-2">{{ doc.phase_code }}</span>
+                    {{ doc.phase_name }}
+                </h2>
+                <div class="d-flex gap-2">
+                    {% if doc.jobtread_url %}
+                    <a href="{{ doc.jobtread_url }}" target="_blank" class="btn btn-sm btn-outline-danger" title="View PDF">
+                        <i class="fas fa-file-pdf"></i>
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-sm btn-outline-primary share-section-btn"
+                            data-phase-code="{{ doc.phase_code }}"
+                            data-phase-name="{{ doc.phase_name }}"
+                            title="Share this section">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sections -->
+            {% for section in doc.sections %}
+            <div class="section-block mb-4">
+                <h5 class="section-name text-muted mb-3">
+                    <i class="fas fa-chevron-right me-2"></i>{{ section.section_name }}
+                </h5>
+
+                <ol class="list-group list-group-numbered">
+                    {% for item in section['items'] %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start spec-item"
+                        data-item-id="{{ item.item_id }}">
+                        <div class="ms-2 me-auto item-content">
+                            <div class="item-text">{{ item.item_text }}</div>
+                            {% if item.item_id in user_notes %}
+                            <div class="item-note mt-2 p-2 bg-light border-start border-3 border-info rounded-end small">
+                                <i class="fas fa-sticky-note text-info me-1"></i>
+                                <span class="note-preview">{{ user_notes[item.item_id][:150] }}{% if user_notes[item.item_id]|length > 150 %}...{% endif %}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="item-actions ms-2 d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-info note-btn {% if item.item_id in user_notes %}active{% endif %}"
+                                    data-item-id="{{ item.item_id }}"
+                                    data-note="{{ user_notes.get(item.item_id, '')|e }}"
+                                    title="Add Note">
+                                <i class="fas fa-sticky-note"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning bookmark-btn {% if item.item_id in bookmarked_ids %}active{% endif %}"
+                                    data-item-id="{{ item.item_id }}"
+                                    title="Bookmark">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endfor %}
+        </section>
+        {% endfor %}
+    </div>
+</div>
+<!-- Notes Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-sticky-note text-info me-2"></i>Add Note
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="noteItemPreview" class="small text-muted mb-3 p-2 bg-light rounded" style="max-height: 100px; overflow-y: auto;"></div>
+                <textarea id="noteText" class="form-control" rows="4" placeholder="Add your note here..."></textarea>
+                <small class="text-muted">Notes are private and only visible to you.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" id="deleteNoteBtn">
+                    <i class="fas fa-trash me-1"></i>Delete
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveNoteBtn">
+                    <i class="fas fa-save me-1"></i>Save Note
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-share-alt text-primary me-2"></i>Share Phase Spec
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="shareDescription" class="text-muted mb-3"></p>
+                <div class="input-group mb-3">
+                    <input type="text" id="shareUrlInput" class="form-control" readonly>
+                    <button class="btn btn-outline-primary" type="button" id="copyShareUrl">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="d-grid gap-2">
+                    <a id="shareEmailBtn" href="#" class="btn btn-outline-secondary">
+                        <i class="fas fa-envelope me-2"></i>Share via Email
+                    </a>
+                    <a id="shareSmsBtn" href="#" class="btn btn-outline-secondary">
+                        <i class="fas fa-sms me-2"></i>Share via SMS
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Figure Modal with Gallery -->
+<div class="modal fade" id="figureModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-image me-2"></i>
+                    <span id="figureModalTitle">Figure Reference</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" style="background-color: #2a2a2a;">
+                <div id="figureLoading" class="py-5 text-center text-white">
+                    <div class="spinner-border text-light" role="status"></div>
+                    <p class="mt-2">Loading figures...</p>
+                </div>
+                <div id="figureGallery" class="d-none position-relative">
+                    <!-- Navigation arrows -->
+                    <button id="figurePrev" class="btn btn-dark position-absolute start-0 top-50 translate-middle-y ms-2" style="z-index: 10; opacity: 0.8;">
+                        <i class="fas fa-chevron-left fa-lg"></i>
+                    </button>
+                    <button id="figureNext" class="btn btn-dark position-absolute end-0 top-50 translate-middle-y me-2" style="z-index: 10; opacity: 0.8;">
+                        <i class="fas fa-chevron-right fa-lg"></i>
+                    </button>
+                    <!-- Image display -->
+                    <div class="text-center p-3" style="min-height: 400px;">
+                        <img id="figureImage" class="img-fluid" style="max-height: 70vh; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" alt="Figure">
+                    </div>
+                    <!-- Thumbnail strip -->
+                    <div id="figureThumbnails" class="d-flex justify-content-center gap-2 p-2 bg-dark" style="overflow-x: auto;"></div>
+                </div>
+                <div id="figureNoImages" class="d-none py-5 text-center text-white">
+                    <i class="fas fa-exclamation-circle fa-3x mb-3 text-warning"></i>
+                    <p>No figure images available for this phase.</p>
+                    <p class="small text-muted">Click "View Full PDF" to see the document.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="figureInfo" class="text-muted me-auto small"></span>
+                <span id="figureCounter" class="badge bg-secondary me-2"></span>
+                <a id="figurePdfLink" href="#" target="_blank" class="btn btn-outline-danger">
+                    <i class="fas fa-file-pdf me-1"></i>View Full PDF
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// PDF URL mapping from phase codes
+const phasePdfUrls = {
+    {% for doc in documents %}
+    {% if doc.jobtread_url %}
+    '{{ doc.phase_code }}': '{{ doc.jobtread_url }}',
+    {% endif %}
+    {% endfor %}
+};
+
+// Available figure images by phase (extracted from PDFs)
+const phaseFigures = {
+    '20-300': [
+        {code: '20-300-P05-01', path: '/static/figures/20-300-P05-01.png', page: 5},
+        {code: '20-300-P06-01', path: '/static/figures/20-300-P06-01.png', page: 6},
+        {code: '20-300-P07-01', path: '/static/figures/20-300-P07-01.png', page: 7},
+        {code: '20-300-P08-01', path: '/static/figures/20-300-P08-01.png', page: 8}
+    ],
+    '20-310': [
+        {code: '20-310-P04-01', path: '/static/figures/20-310-P04-01.png', page: 4},
+        {code: '20-310-P05-01', path: '/static/figures/20-310-P05-01.png', page: 5},
+        {code: '20-310-P06-01', path: '/static/figures/20-310-P06-01.png', page: 6},
+        {code: '20-310-P07-01', path: '/static/figures/20-310-P07-01.png', page: 7},
+        {code: '20-310-P08-01', path: '/static/figures/20-310-P08-01.png', page: 8},
+        {code: '20-310-P09-01', path: '/static/figures/20-310-P09-01.png', page: 9}
+    ],
+    '20-400': [
+        {code: '20-400-P05-01', path: '/static/figures/20-400-P05-01.png', page: 5},
+        {code: '20-400-P06-01', path: '/static/figures/20-400-P06-01.png', page: 6}
+    ],
+    '30-100': [
+        {code: '30-100-P11-01', path: '/static/figures/30-100-P11-01.jpg', page: 11},
+        {code: '30-100-P11-02', path: '/static/figures/30-100-P11-02.png', page: 11},
+        {code: '30-100-P11-03', path: '/static/figures/30-100-P11-03.png', page: 11},
+        {code: '30-100-P11-06', path: '/static/figures/30-100-P11-06.png', page: 11},
+        {code: '30-100-P12-01', path: '/static/figures/30-100-P12-01.jpg', page: 12},
+        {code: '30-100-P12-02', path: '/static/figures/30-100-P12-02.png', page: 12},
+        {code: '30-100-P12-06', path: '/static/figures/30-100-P12-06.jpg', page: 12},
+        {code: '30-100-P14-01', path: '/static/figures/30-100-P14-01.png', page: 14}
+    ],
+    '30-150': [
+        {code: '30-150-P05-01', path: '/static/figures/30-150-P05-01.png', page: 5},
+        {code: '30-150-P06-01', path: '/static/figures/30-150-P06-01.png', page: 6}
+    ],
+    '30-160': [
+        {code: '30-160-P05-01', path: '/static/figures/30-160-P05-01.png', page: 5}
+    ],
+    '30-700': [
+        {code: '30-700-P03-01', path: '/static/figures/30-700-P03-01.png', page: 3},
+        {code: '30-700-P04-01', path: '/static/figures/30-700-P04-01.png', page: 4},
+        {code: '30-700-P05-01', path: '/static/figures/30-700-P05-01.png', page: 5}
+    ],
+    '30-730': [
+        {code: '30-730-P03-01', path: '/static/figures/30-730-P03-01.png', page: 3}
+    ],
+    '50-400': [
+        {code: '50-400-P02-01', path: '/static/figures/50-400-P02-01.png', page: 2},
+        {code: '50-400-P03-01', path: '/static/figures/50-400-P03-01.png', page: 3},
+        {code: '50-400-P04-01', path: '/static/figures/50-400-P04-01.png', page: 4}
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Linkify figure references in all item text
+    linkifyFigureReferences();
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const allItems = document.querySelectorAll('.spec-item');
+    const allSections = document.querySelectorAll('.spec-section');
+
+    // Live search functionality
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.toLowerCase().trim();
+
+        if (query.length < 2) {
+            // Show all
+            allSections.forEach(s => s.style.display = '');
+            allItems.forEach(item => {
+                item.style.display = '';
+                item.classList.remove('highlight-match');
+            });
+            searchResults.classList.add('d-none');
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            let matchCount = 0;
+
+            allSections.forEach(section => {
+                const sectionId = section.id;
+                const phaseCode = sectionId.replace('spec-', '');
+                const phaseName = section.querySelector('.section-title').textContent.toLowerCase();
+                let sectionHasMatch = phaseName.includes(query) || phaseCode.toLowerCase().includes(query);
+
+                const items = section.querySelectorAll('.spec-item');
+                items.forEach(item => {
+                    const text = item.querySelector('.item-text').textContent.toLowerCase();
+                    if (text.includes(query) || sectionHasMatch) {
+                        item.style.display = '';
+                        if (text.includes(query)) {
+                            item.classList.add('highlight-match');
+                            matchCount++;
+                        } else {
+                            item.classList.remove('highlight-match');
+                        }
+                    } else {
+                        item.style.display = 'none';
+                        item.classList.remove('highlight-match');
+                    }
+                });
+
+                // Check if section has any visible items
+                const visibleItems = section.querySelectorAll('.spec-item[style=""],.spec-item:not([style])');
+                const hasVisible = Array.from(visibleItems).some(i => i.style.display !== 'none');
+                section.style.display = (sectionHasMatch || hasVisible) ? '' : 'none';
+            });
+
+            // Show results count
+            searchResults.innerHTML = `<div class="alert alert-info">Found ${matchCount} matching items</div>`;
+            searchResults.classList.remove('d-none');
+        }, 300);
+    });
+
+    // Search button click
+    document.getElementById('search-button').addEventListener('click', function() {
+        searchInput.dispatchEvent(new Event('input'));
+    });
+
+    // Enter key search
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Notes functionality
+    let currentNoteItemId = null;
+    const noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
+
+    document.querySelectorAll('.note-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentNoteItemId = this.dataset.itemId;
+            const existingNote = this.dataset.note || '';
+            const itemText = this.closest('.spec-item').querySelector('.item-text').textContent;
+
+            document.getElementById('noteItemPreview').textContent = itemText.substring(0, 200) + (itemText.length > 200 ? '...' : '');
+            document.getElementById('noteText').value = existingNote;
+            document.getElementById('deleteNoteBtn').style.display = existingNote ? '' : 'none';
+
+            noteModal.show();
+        });
+    });
+
+    document.getElementById('saveNoteBtn').addEventListener('click', async function() {
+        const noteText = document.getElementById('noteText').value.trim();
+
+        try {
+            const response = await fetch('/api/spec-reference/notes', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({item_id: parseInt(currentNoteItemId), note_text: noteText})
+            });
+
+            if (response.ok) {
+                const btn = document.querySelector(`.note-btn[data-item-id="${currentNoteItemId}"]`);
+                const item = btn.closest('.spec-item');
+
+                if (noteText) {
+                    btn.classList.add('active');
+                    btn.dataset.note = noteText;
+
+                    // Update or add note preview
+                    let noteDiv = item.querySelector('.item-note');
+                    if (!noteDiv) {
+                        noteDiv = document.createElement('div');
+                        noteDiv.className = 'item-note mt-2 p-2 bg-light border-start border-3 border-info rounded-end small';
+                        item.querySelector('.item-content').appendChild(noteDiv);
+                    }
+                    noteDiv.innerHTML = `<i class="fas fa-sticky-note text-info me-1"></i><span class="note-preview">${noteText.substring(0, 150)}${noteText.length > 150 ? '...' : ''}</span>`;
+                } else {
+                    btn.classList.remove('active');
+                    btn.dataset.note = '';
+                    const noteDiv = item.querySelector('.item-note');
+                    if (noteDiv) noteDiv.remove();
+                }
+
+                noteModal.hide();
+                showToast(noteText ? 'Note saved' : 'Note removed');
+            }
+        } catch (error) {
+            console.error('Note error:', error);
+            showToast('Error saving note', 'danger');
+        }
+    });
+
+    document.getElementById('deleteNoteBtn').addEventListener('click', async function() {
+        try {
+            const response = await fetch(`/api/spec-reference/notes/${currentNoteItemId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const btn = document.querySelector(`.note-btn[data-item-id="${currentNoteItemId}"]`);
+                const item = btn.closest('.spec-item');
+
+                btn.classList.remove('active');
+                btn.dataset.note = '';
+                const noteDiv = item.querySelector('.item-note');
+                if (noteDiv) noteDiv.remove();
+
+                noteModal.hide();
+                showToast('Note deleted');
+            }
+        } catch (error) {
+            console.error('Delete note error:', error);
+        }
+    });
+
+    // Share functionality
+    const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+
+    document.querySelectorAll('.share-section-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const phaseCode = this.dataset.phaseCode;
+            const phaseName = this.dataset.phaseName;
+            const url = `${window.location.origin}/spec-reference/${phaseCode}`;
+
+            document.getElementById('shareDescription').textContent = `Share Phase ${phaseCode}: ${phaseName}`;
+            document.getElementById('shareUrlInput').value = url;
+            document.getElementById('shareEmailBtn').href = `mailto:?subject=Phase Spec: ${phaseCode} ${phaseName}&body=Check out this Phase Spec: ${url}`;
+            document.getElementById('shareSmsBtn').href = `sms:?body=Phase Spec ${phaseCode}: ${url}`;
+
+            shareModal.show();
+        });
+    });
+
+    document.getElementById('copyShareUrl').addEventListener('click', function() {
+        const url = document.getElementById('shareUrlInput').value;
+        navigator.clipboard.writeText(url).then(() => {
+            showToast('Link copied to clipboard');
+        });
+    });
+
+    // Bookmark functionality
+    document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const itemId = this.dataset.itemId;
+            const isBookmarked = this.classList.contains('active');
+
+            try {
+                if (isBookmarked) {
+                    const response = await fetch(`/api/spec-reference/bookmarks/${itemId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        this.classList.remove('active');
+                        showToast('Bookmark removed');
+                    }
+                } else {
+                    const response = await fetch('/api/spec-reference/bookmarks', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({item_id: parseInt(itemId)})
+                    });
+                    if (response.ok) {
+                        this.classList.add('active');
+                        showToast('Bookmark added');
+                    }
+                }
+            } catch (error) {
+                console.error('Bookmark error:', error);
+            }
+        });
+    });
+
+    // Share functionality
+    document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const url = this.dataset.url || window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: 'Phase Spec', url: url });
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Link copied to clipboard');
+                });
+            }
+        });
+    });
+
+    // Highlight TOC item on scroll
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('.spec-section');
+
+    window.addEventListener('scroll', function() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        tocLinks.forEach(link => {
+            link.classList.remove('active-toc');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active-toc');
+            }
+        });
+    });
+});
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+
+// Linkify figure references (e.g., "Fig. 30-100-35-001")
+function linkifyFigureReferences() {
+    const itemTexts = document.querySelectorAll('.item-text');
+    // Pattern matches: Fig. XX-XXX-YY-ZZZ or (Fig. XX-XXX-YY-ZZZ) with optional multiple figures
+    const figPattern = /\(?(Fig\.\s*[\d-]+(?:,\s*[\d-]+)*)\)?/gi;
+
+    itemTexts.forEach(elem => {
+        const originalHtml = elem.innerHTML;
+        const newHtml = originalHtml.replace(figPattern, (match) => {
+            // Extract figure numbers from the match
+            const figNumbers = match.match(/\d{2}-\d{3}(?:-\d{2}-\d{3})?/g);
+            if (!figNumbers || figNumbers.length === 0) return match;
+
+            // Use the first figure number to determine the phase
+            const firstFig = figNumbers[0];
+            const phaseCode = extractPhaseCode(firstFig);
+
+            if (phaseCode && phasePdfUrls[phaseCode]) {
+                return `<a href="#" class="fig-link text-primary" data-fig="${match}" data-phase="${phaseCode}" title="View figure in PDF">${match}</a>`;
+            }
+            return match;
+        });
+
+        if (newHtml !== originalHtml) {
+            elem.innerHTML = newHtml;
+        }
+    });
+
+    // Add click handlers to figure links
+    document.querySelectorAll('.fig-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const figRef = this.dataset.fig;
+            const phaseCode = this.dataset.phase;
+            openFigureModal(figRef, phaseCode);
+        });
+    });
+}
+
+// Extract phase code from figure reference (e.g., "30-100-35-001" -> "30-100")
+function extractPhaseCode(figNumber) {
+    // Figure format: XX-XXX-YY-ZZZ where XX-XXX is the phase code
+    const parts = figNumber.split('-');
+    if (parts.length >= 2) {
+        const potentialCode = parts[0] + '-' + parts[1];
+        // Check if this phase code exists in our mapping
+        if (phasePdfUrls[potentialCode]) {
+            return potentialCode;
+        }
+        // Try with just first two parts for codes like "20-300", "30-100"
+        // Also check 3-part codes like "30-650" from "30-650-660"
+        for (const code of Object.keys(phasePdfUrls)) {
+            if (figNumber.startsWith(code.replace('-', ''))) {
+                return code;
+            }
+            // Check if figure starts with this phase's numeric prefix
+            const codePrefix = code.split('-')[0] + code.split('-')[1];
+            const figPrefix = parts[0] + parts[1];
+            if (figPrefix === codePrefix) {
+                return code;
+            }
+        }
+    }
+    return null;
+}
+
+// Gallery state
+let currentFigures = [];
+let currentFigureIndex = 0;
+
+// Open the figure modal with gallery view
+function openFigureModal(figRef, phaseCode) {
+    const modal = new bootstrap.Modal(document.getElementById('figureModal'));
+    const title = document.getElementById('figureModalTitle');
+    const loading = document.getElementById('figureLoading');
+    const gallery = document.getElementById('figureGallery');
+    const noImages = document.getElementById('figureNoImages');
+    const figureImage = document.getElementById('figureImage');
+    const thumbnails = document.getElementById('figureThumbnails');
+    const pdfLink = document.getElementById('figurePdfLink');
+    const info = document.getElementById('figureInfo');
+    const counter = document.getElementById('figureCounter');
+
+    // Get PDF URL and figures for this phase
+    const pdfUrl = phasePdfUrls[phaseCode];
+    currentFigures = phaseFigures[phaseCode] || [];
+    currentFigureIndex = 0;
+
+    // Reset state
+    loading.classList.remove('d-none');
+    gallery.classList.add('d-none');
+    noImages.classList.add('d-none');
+
+    // Set title and PDF link
+    title.textContent = `${figRef} - Phase ${phaseCode}`;
+    pdfLink.href = pdfUrl || '#';
+    pdfLink.style.display = pdfUrl ? '' : 'none';
+
+    if (currentFigures.length > 0) {
+        // Build thumbnail strip
+        thumbnails.innerHTML = '';
+        currentFigures.forEach((fig, idx) => {
+            const thumb = document.createElement('img');
+            thumb.src = fig.path;
+            thumb.className = 'figure-thumbnail' + (idx === 0 ? ' active' : '');
+            thumb.style.cssText = 'height: 50px; cursor: pointer; border: 2px solid transparent; border-radius: 4px;';
+            thumb.title = `Page ${fig.page}`;
+            thumb.onclick = () => showFigure(idx);
+            thumbnails.appendChild(thumb);
+        });
+
+        // Show first figure
+        showFigure(0);
+
+        loading.classList.add('d-none');
+        gallery.classList.remove('d-none');
+        info.textContent = `${currentFigures.length} figure(s) available - Use arrows or thumbnails to browse`;
+    } else {
+        // No figures available
+        loading.classList.add('d-none');
+        noImages.classList.remove('d-none');
+        info.textContent = pdfUrl ? 'View the PDF to find figures' : 'No figures available';
+        counter.textContent = '';
+    }
+
+    modal.show();
+}
+
+// Show a specific figure by index
+function showFigure(index) {
+    if (index < 0 || index >= currentFigures.length) return;
+
+    currentFigureIndex = index;
+    const fig = currentFigures[index];
+
+    const figureImage = document.getElementById('figureImage');
+    const counter = document.getElementById('figureCounter');
+    const thumbnails = document.querySelectorAll('.figure-thumbnail');
+
+    // Update main image
+    figureImage.src = fig.path;
+    figureImage.alt = `Figure from page ${fig.page}`;
+
+    // Update counter
+    counter.textContent = `${index + 1} / ${currentFigures.length} (Page ${fig.page})`;
+
+    // Update thumbnail highlighting
+    thumbnails.forEach((thumb, idx) => {
+        thumb.style.borderColor = idx === index ? '#0d6efd' : 'transparent';
+        thumb.style.opacity = idx === index ? '1' : '0.6';
+    });
+
+    // Update nav button visibility
+    document.getElementById('figurePrev').style.visibility = index > 0 ? 'visible' : 'hidden';
+    document.getElementById('figureNext').style.visibility = index < currentFigures.length - 1 ? 'visible' : 'hidden';
+}
+
+// Navigation handlers
+document.getElementById('figurePrev')?.addEventListener('click', () => showFigure(currentFigureIndex - 1));
+document.getElementById('figureNext')?.addEventListener('click', () => showFigure(currentFigureIndex + 1));
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('figureModal');
+    if (!modal.classList.contains('show')) return;
+
+    if (e.key === 'ArrowLeft') showFigure(currentFigureIndex - 1);
+    if (e.key === 'ArrowRight') showFigure(currentFigureIndex + 1);
+});
+</script>
+
+<style>
+.toc {
+    font-size: 0.9rem;
+}
+.toc-link {
+    display: block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+.toc-link:hover {
+    background-color: #e9ecef;
+}
+.toc-link.active-toc {
+    background-color: #182641;
+    color: white !important;
+}
+.toc-link.active-toc .badge {
+    background-color: #ad9244 !important;
+}
+.toc-name {
+    font-size: 0.85rem;
+}
+
+.spec-section {
+    scroll-margin-top: 80px;
+}
+
+.section-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ad9244;
+}
+
+.spec-item {
+    transition: background-color 0.2s;
+}
+.spec-item:hover {
+    background-color: #f8f9fa;
+}
+.spec-item.highlight-match {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.item-text {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.bookmark-btn.active {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+.note-btn.active {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+}
+
+.section-title .badge {
+    font-size: 0.9rem;
+}
+
+/* Figure link styling */
+.fig-link {
+    background-color: #e7f1ff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+.fig-link:hover {
+    background-color: #cce0ff;
+    text-decoration: underline;
+}
+
+/* Figure modal */
+#figureModal .modal-body {
+    background-color: #f5f5f5;
+}
+</style>
+{% endblock %}
