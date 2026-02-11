@@ -1,19 +1,14 @@
-version: '3.8'
-
 services:
   web:
     build: .
     container_name: simonini-isms-web
-    ports:
-      - "8082:5000"
+    command: ["gunicorn", "--bind", "0.0.0.0:8082", "--workers", "2", "--timeout", "120", "app:create_app()"]
+    network_mode: host
     env_file:
       - .env
-    networks:
-      - default
-      - postgres_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -31,8 +26,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-networks:
-  postgres_network:
-    external: true
-    name: postgresql-docker_postgres_network
